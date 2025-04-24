@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -39,6 +39,7 @@ import {
 import { NewTradeForm } from "@/components/new-trade-form";
 import type { TradeFormData } from "@/components/new-trade-form";
 
+// DataTable lists trades grouped by symbol
 export interface Trade {
   id?: string;
   symbol: string;
@@ -51,7 +52,6 @@ export interface Trade {
   notes?: string;
 }
 
-// Group trades by symbol for expandable UI
 function groupTradesBySymbol(trades: Trade[]) {
   const map = new Map<string, Trade[]>();
   for (const trade of trades) {
@@ -83,16 +83,13 @@ export function DataTable() {
     (TradeFormData & { id?: string }) | null
   >(null);
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-  const [expandedGroups, setExpandedGroups] = React.useState<Set<string>>(
-    new Set()
-  );
+  const [expandedGroups, setExpandedGroups] = React.useState(new Set<string>());
 
   const filtered = trades.filter((t) => {
-    const matchSymbol = t.symbol.toLowerCase().includes(filter.toLowerCase());
-    const matchName = t.stock_name
-      ?.toLowerCase()
-      .includes(filter.toLowerCase());
-    return matchSymbol || matchName;
+    return (
+      t.symbol.toLowerCase().includes(filter.toLowerCase()) ||
+      t.stock_name?.toLowerCase().includes(filter.toLowerCase())
+    );
   });
 
   const groupedTrades = groupTradesBySymbol(filtered);
@@ -120,10 +117,6 @@ export function DataTable() {
   if (loading) {
     return (
       <Card className="mx-4 lg:mx-6">
-        <CardHeader>
-          <CardTitle>Handelshistorie</CardTitle>
-          <Skeleton className="h-10 w-72 mt-2" />
-        </CardHeader>
         <CardContent>
           <Skeleton className="h-64 w-full rounded-md" />
         </CardContent>
@@ -140,7 +133,6 @@ export function DataTable() {
           onChange={(e) => setFilter(e.target.value)}
           className="w-60 ml-6 my-4"
         />
-
         <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -162,7 +154,7 @@ export function DataTable() {
                 groupedTrades.map((group) => (
                   <React.Fragment key={group.symbol}>
                     <TableRow
-                      className="bg-muted/50 hover:bg-muted font-semibold text-base rounded cursor-pointer transition"
+                      className="bg-muted/50 hover:bg-muted font-semibold cursor-pointer transition"
                       onClick={() => toggleGroup(group.symbol)}
                     >
                       <TableCell colSpan={10} className="px-4 py-2">
@@ -174,13 +166,13 @@ export function DataTable() {
                           )}
                           {group.symbol} — {group.trades.length} Trade
                           {group.trades.length > 1 ? "s" : ""},{" "}
-                          {group.totalQuantity} Aktien, Durchschnitt: €
+                          {group.totalQuantity} Aktien, Ø: €
                           {group.avgPrice.toFixed(2)}
                         </div>
                       </TableCell>
                     </TableRow>
                     {expandedGroups.has(group.symbol) &&
-                      group.trades.map((trade, index) => {
+                      group.trades.map((trade, idx) => {
                         const pnl =
                           trade.sell_price && trade.sell_price > 0
                             ? (trade.sell_price - trade.buy_price) *
@@ -188,11 +180,8 @@ export function DataTable() {
                             : null;
                         return (
                           <TableRow
-                            key={
-                              trade.id ??
-                              `${trade.symbol}-${trade.buy_date}-${index}`
-                            }
-                            className="hover:bg-accent"
+                            key={trade.id ?? `${trade.symbol}-${idx}`}
+                            className="hover:bg-accent cursor-pointer"
                             onClick={() => {
                               setEditTrade({
                                 ...trade,
@@ -234,7 +223,7 @@ export function DataTable() {
                                     <ArrowUpIcon className="h-3 w-3" />
                                   ) : (
                                     <ArrowDownIcon className="h-3 w-3" />
-                                  )}
+                                  )}{" "}
                                   {pnl.toFixed(2)} €
                                 </Badge>
                               ) : (
@@ -249,6 +238,7 @@ export function DataTable() {
                                     size="icon"
                                     variant="ghost"
                                     disabled={deletingId === trade.id}
+                                    onClick={(e) => e.stopPropagation()}
                                   >
                                     <Trash2Icon className="h-4 w-4 text-red-500" />
                                     <span className="sr-only">Löschen</span>
@@ -266,11 +256,16 @@ export function DataTable() {
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>
+                                    <AlertDialogCancel
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       Abbrechen
                                     </AlertDialogCancel>
                                     <AlertDialogAction
-                                      onClick={() => deleteTrade(trade.id!)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteTrade(trade.id!);
+                                      }}
                                     >
                                       Löschen
                                     </AlertDialogAction>
@@ -306,7 +301,7 @@ export function DataTable() {
             setEditDialogOpen(false);
             setEditTrade(null);
           }}
-          trigger={<span />} // placeholder trigger, invisible
+          trigger={<span />} // invisible trigger
           open={editDialogOpen}
           setOpen={setEditDialogOpen}
         />

@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="de"> {/* Set language for accessibility and SEO */}
+    <html lang="de"> 
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {/* Toaster for global toast notifications */}
         <Toaster />
