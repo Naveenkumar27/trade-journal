@@ -20,13 +20,21 @@ A web platform for tracking, analyzing, and managing your stock trading activity
 
 ## 👥 User Story
 
-**Traders** use **Trade Journal** to:
-- Log all their stock trades and investments
+**Naveen** (and other users) uses the Trade Journal app to:
 - Track all their stock trades (buy and sell)
 - Get insights into trading performance (P&L, hit rate, etc.)
 - Keep a log of trade learnings to improve future decision-making
 - Manage and analyze open stock positions
 - View their entire trading history and analyze past performance
+
+---
+
+## 🛡 Security & Data
+
+- Uses **Supabase Auth** for secure login and authentication
+- **Row Level Security (RLS)** for fine-grained access control
+- No cookies or external analytics
+- **GDPR-compliant** and secure by default
 
 ---
 
@@ -107,6 +115,15 @@ npm run dev
 
 ---
 
+## 🔮 Future Enhancements
+
+- 📊 **Trade Analytics**: Add deeper analytics, such as risk analysis, win streaks, etc.
+- 📱 **PWA support**: Allow offline access and notifications.
+- 🔐 **Invite-only feature** for private portfolios.
+- 🧪 **End-to-End Testing**: Setup for integration tests for critical features.
+
+---
+
 ## 🧠 State Management
 
 - Global user session handled using `UserContext`.
@@ -120,6 +137,11 @@ You can explore Trade Journal using the following demo account:
 
 ```
 Email: demo@tradejournal.app
-Password: TradeDemo123!
+Password: trade1234
 ```
-> ✅ You can also sign up with your own email. Email confirmation is disabled, so any address will work.
+
+---
+
+## 📜 License
+
+This project is open-source and available under the MIT License. See the LICENSE file for more details.
