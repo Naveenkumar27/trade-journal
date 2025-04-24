@@ -123,3 +123,15 @@ Email: demo@tradejournal.app
 Password: TradeDemo123!
 ```
 > ✅ You can also sign up with your own email. Email confirmation is disabled, so any address will work.
+
+
+## 📸 Screenshots
+
+### Dashboard
+![Dashboard Screenshot](/public/screenshots/Dashboard.png)
+
+### Trade Entry
+![Trade Entry Screenshot](/public/screenshots/Trade-entry-page.png)
+
+### Trade History
+![Trade History Screenshot](/public/screenshots/Trade-history.png)
